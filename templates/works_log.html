@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+        <h2 class="centered-title">Works log</h2>
+        <br>
+        {% for action in actions %}
+            <h3>Action # {{ loop.index }}</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="table-header">Time of activity</th>
+                        <th scope="col" class="table-header">Team leader</th>
+                        <th scope="col" class="table-header">Duration</th>
+                        <th scope="col" class="table-header">List of collaborators</th>
+                        <th scope="col" class="table-header">Is finished</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td scope="row" class="table-item">{{ action.job }}</th>
+                        <td scope="row" class="table-item">{{ action.leader.surname}} {{ action.leader.name }}</th>
+                        <td scope="row" class="table-item">{{ action.work_size }}</th>
+                        <td scope="row" class="table-item">{{ action.collaborators }}</th>
+                        {% if action.is_finished %}
+                            <td scope="row" style="background-color: #eeffee;">Finished</th>
+                        {% else %}
+                        <td scope="row" style="background-color: #ffeeff">Is not finished</th>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        {% endfor %}
+    {% endblock %}
+</body>
+</html>

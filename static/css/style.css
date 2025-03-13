@@ -1,0 +1,20 @@
+h4 {
+    color: darkgrey;
+    margin: 20px;
+}
+
+.centered-title {
+    text-align: center;
+}
+
+.table-header {
+    background-color: #dddddd;
+    width: 25%;
+}
+
+.table-item {
+    max-width: 25%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #eeeeff;
+}
