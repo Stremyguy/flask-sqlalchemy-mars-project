@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, redirect
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
+from data.departments import Departments
 from forms.user import RegisterForm
 
 app = Flask(__name__)
