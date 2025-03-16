@@ -79,7 +79,7 @@ def register() -> str:
         session.add(user)
         session.commit()
         
-        return redirect("/success")
+        return redirect("/login")
     return render_template("register.html", **param, form=form)
 
 
