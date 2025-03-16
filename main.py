@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session
@@ -7,6 +7,7 @@ from data.jobs import Jobs
 from data.departments import Departments
 from forms.user import RegisterForm, LoginForm
 from forms.jobs import JobsForm
+from sqlalchemy import or_
 
 app = Flask(__name__)
 
@@ -138,6 +139,47 @@ def add_job() -> str:
         session.add(job)
         session.commit()
         return redirect("/")
+    return render_template("jobs.html", **param)
+
+
+@app.route("/jobs/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_job(id: int) -> str:
+    param = {}
+    form = JobsForm()
+    
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["title"] = "Edit a job"
+    param["form"] = form
+    
+    if request.method == "GET":
+        session = db_session.create_session()
+        jobs = session.query(Jobs).filter(Jobs.id == id,
+                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          ).first()
+        if jobs:
+            form.title.data = jobs.job
+            form.team_leader_id.data = jobs.team_leader
+            form.duration.data = jobs.work_size
+            form.collaborators.data = jobs.collaborators
+            form.is_finished.data = jobs.is_finished
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        jobs = session.query(Jobs).filter(Jobs.id == id,
+                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          ).first()
+        if jobs:
+            jobs.job = form.title.data
+            jobs.team_leader = form.team_leader_id.data
+            jobs.work_size = form.duration.data
+            jobs.collaborators = form.collaborators.data
+            jobs.is_finished = form.is_finished.data
+            session.commit()
+            return redirect("/")
+        else:
+            abort(404)
     return render_template("jobs.html", **param)
 
 
