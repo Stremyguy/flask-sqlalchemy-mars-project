@@ -118,7 +118,7 @@ def logout() -> None:
     return redirect("/")
 
 
-@app.route("/addjob", methods=["GET", "POST"])
+@app.route("/add_job", methods=["GET", "POST"])
 @login_required
 def add_job() -> str:
     param = {}
@@ -155,7 +155,7 @@ def edit_job(id: int) -> str:
     if request.method == "GET":
         session = db_session.create_session()
         jobs = session.query(Jobs).filter(Jobs.id == id,
-                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          or_(Jobs.team_leader == int(current_user.get_id()), int(current_user.get_id()) == 1)
                                           ).first()
         if jobs:
             form.title.data = jobs.job
@@ -168,7 +168,7 @@ def edit_job(id: int) -> str:
     if form.validate_on_submit():
         session = db_session.create_session()
         jobs = session.query(Jobs).filter(Jobs.id == id,
-                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          or_(Jobs.team_leader == int(current_user.get_id()), int(current_user.get_id()) == 1)
                                           ).first()
         if jobs:
             jobs.job = form.title.data
@@ -188,7 +188,7 @@ def edit_job(id: int) -> str:
 def delete_job(id: int) -> None:
     session = db_session.create_session()
     jobs = session.query(Jobs).filter(Jobs.id == id,
-                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          or_(Jobs.team_leader == int(current_user.get_id()), int(current_user.get_id()) == 1)
                                           ).first()
     if jobs:
         session.delete(jobs)
