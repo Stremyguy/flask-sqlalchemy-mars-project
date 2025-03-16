@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <title>{{ title }}</title>
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>Add a job</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title(class="form-control") }}<br>
+            {% for error in form.title.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.team_leader_id.label }}<br>
+            {{ form.team_leader_id(class="form-control") }}<br>
+            {% for error in form.team_leader_id.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.duration.label }}<br>
+            {{ form.duration(class="form-control") }}<br>
+            {% for error in form.duration.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.collaborators.label }}<br>
+            {{ form.collaborators(class="form-control") }}<br>
+            {% for error in form.collaborators.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </p>
+        <p>{{ form.is_finished() }} {{ form.is_finished.label }}</p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        {{ message }}
+    </form>
+    {% endblock %}
+</body>
+</html>

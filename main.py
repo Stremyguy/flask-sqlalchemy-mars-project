@@ -1,11 +1,12 @@
 from flask import Flask, render_template, url_for, redirect
 from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import current_user
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Departments
-from forms.user import RegisterForm
-from forms.user import LoginForm
+from forms.user import RegisterForm, LoginForm
+from forms.jobs import JobsForm
 
 app = Flask(__name__)
 
@@ -114,6 +115,30 @@ def login() -> str:
 def logout() -> None:
     logout_user()
     return redirect("/")
+
+
+@app.route("/addjob", methods=["GET", "POST"])
+@login_required
+def add_job() -> str:
+    param = {}
+    form = JobsForm()
+    
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["title"] = "Add a job"
+    param["form"] = form
+    
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        job = Jobs()
+        job.job = form.title.data
+        job.team_leader = form.team_leader_id.data
+        job.work_size = form.duration.data
+        job.collaborators = form.collaborators.data
+        job.is_finished = form.is_finished.data
+        session.add(job)
+        session.commit()
+        return redirect("/")
+    return render_template("jobs.html", **param)
 
 
 if __name__ == "__main__":
