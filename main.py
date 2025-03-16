@@ -183,5 +183,20 @@ def edit_job(id: int) -> str:
     return render_template("jobs.html", **param)
 
 
+@app.route("/delete_job/<int:id>", methods=["GET", "POST"])
+@login_required
+def delete_job(id: int) -> None:
+    session = db_session.create_session()
+    jobs = session.query(Jobs).filter(Jobs.id == id,
+                                          or_(Jobs.team_leader == current_user.get_id(), current_user.get_id() == "1")
+                                          ).first()
+    if jobs:
+        session.delete(jobs)
+        session.commit()
+    else:
+        abort(404)
+    return redirect("/")
+
+
 if __name__ == "__main__":
     main()
