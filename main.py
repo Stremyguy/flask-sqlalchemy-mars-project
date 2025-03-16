@@ -1,10 +1,11 @@
 from flask import Flask, render_template, url_for, redirect
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user, login_required, logout_user
 from data import db_session
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Departments
 from forms.user import RegisterForm
+from forms.user import LoginForm
 
 app = Flask(__name__)
 
@@ -84,6 +85,35 @@ def register() -> str:
 def load_user(user_id: int) -> None:
     session = db_session.create_session()
     return session.query(User).get(user_id)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login() -> str:
+    param = {}
+    form = LoginForm()
+    
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["title"] = "Registration"
+    param["form"] = form
+    
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        user = session.query(User).filter(User.email == form.email.data).first()
+        
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template("login.html",
+                               message="Incorrect email or password",
+                               form=form)
+    return render_template("login.html", **param)
+
+
+@app.route("/logout")
+@login_required
+def logout() -> None:
+    logout_user()
+    return redirect("/")
 
 
 if __name__ == "__main__":
