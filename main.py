@@ -7,6 +7,7 @@ from data.jobs import Jobs
 from data.departments import Departments
 from forms.user import RegisterForm, LoginForm
 from forms.jobs import JobsForm
+from forms.departments import DepartmentsForm
 from sqlalchemy import or_
 
 app = Flask(__name__)
@@ -196,6 +197,97 @@ def delete_job(id: int) -> None:
     else:
         abort(404)
     return redirect("/")
+
+
+@app.route("/departments")
+def departments() -> str:
+    session = db_session.create_session()
+    
+    departments = session.query(Departments).all()
+
+    param = {}
+    param["title"] = "List of Departments"
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["departments"] = departments
+    
+    return render_template("departments_list.html", **param)
+
+
+@app.route("/add_department", methods=["GET", "POST"])
+@login_required
+def add_department() -> str:
+    param = {}
+    form = DepartmentsForm()
+    
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["title"] = "Add a department"
+    param["form"] = form
+    
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        department = Departments()
+        department.title = form.title.data
+        department.chief = form.chief.data
+        department.members = form.members.data
+        department.email = form.email.data
+        session.add(department)
+        session.commit()
+        return redirect("/departments")
+    return render_template("departments.html", **param)
+
+
+@app.route("/departments/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_department(id: int) -> str:
+    param = {}
+    form = DepartmentsForm()
+    
+    param["css_link"] = url_for("static", filename="css/style.css")
+    param["title"] = "Edit a department"
+    param["form"] = form
+    
+    if request.method == "GET":
+        session = db_session.create_session()
+        departments = session.query(Departments).filter(Departments.id == id,
+                                                        or_(Departments.chief == int(current_user.get_id()), int(current_user.get_id()) == 1)
+                                                        ).first()
+        if departments:
+            form.title.data = departments.title
+            form.chief.data = departments.chief
+            form.members.data = departments.members
+            form.email.data = departments.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        departments = session.query(Departments).filter(Departments.id == id,
+                                                        or_(Departments.chief == int(current_user.get_id()), int(current_user.get_id()) == 1)
+                                                        ).first()
+        if departments:
+            departments.title = form.title.data
+            departments.chief = form.chief.data
+            departments.members = form.members.data
+            departments.email = form.email.data
+            session.commit()
+            return redirect("/departments")
+        else:
+            abort(404)
+    return render_template("departments.html", **param)
+
+
+@app.route("/delete_department/<int:id>", methods=["GET", "POST"])
+@login_required
+def delete_department(id: int) -> None:
+    session = db_session.create_session()
+    departments = session.query(Departments).filter(Departments.id == id,
+                                                    or_(Departments.chief == int(current_user.get_id()), int(current_user.get_id()) == 1)
+                                                    ).first()
+    if departments:
+        session.delete(departments)
+        session.commit()
+    else:
+        abort(404)
+    return redirect("/departments")
 
 
 if __name__ == "__main__":

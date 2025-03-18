@@ -15,12 +15,13 @@
         {% if current_user.is_authenticated %}
             <a href="add_job" class="btn btn-secondary">Add job</a>
         {% endif %}
+        <a href="departments" class="btn btn-secondary">Go to Departments</a>
         {% for action in actions %}
             <h3>Action # {{ loop.index }}</h3>
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" class="table-header">Time of activity</th>
+                        <th scope="col" class="table-header">Title of activity</th>
                         <th scope="col" class="table-header">Team leader</th>
                         <th scope="col" class="table-header">Duration</th>
                         <th scope="col" class="table-header">List of collaborators</th>
@@ -29,14 +30,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td scope="row" class="table-item">{{ action.job }}</th>
-                        <td scope="row" class="table-item">{{ action.leader.surname}} {{ action.leader.name }}</th>
-                        <td scope="row" class="table-item">{{ action.work_size }}</th>
-                        <td scope="row" class="table-item">{{ action.collaborators }}</th>
+                        <td scope="row" class="table-item">{{ action.job }}</td>
+                        <td scope="row" class="table-item">{{ action.leader.surname}} {{ action.leader.name }}</td>
+                        <td scope="row" class="table-item">{{ action.work_size }}</td>
+                        <td scope="row" class="table-item">{{ action.collaborators }}</td>
                         {% if action.is_finished %}
-                            <td scope="row" style="background-color: #eeffee;">Finished</th>
+                            <td scope="row" style="background-color: #eeffee;">Finished</td>
                         {% else %}
-                        <td scope="row" style="background-color: #ffeeff">Is not finished</th>
+                            <td scope="row" style="background-color: #ffeeff">Is not finished</td>
                         {% endif %}
                     </tr>
                 </tbody>
