@@ -5,6 +5,7 @@ from data import db_session
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Departments
+from data.category import Category
 from forms.user import RegisterForm, LoginForm
 from forms.jobs import JobsForm
 from forms.departments import DepartmentsForm
@@ -87,7 +88,7 @@ def register() -> str:
 @login_manager.user_loader
 def load_user(user_id: int) -> None:
     session = db_session.create_session()
-    return session.query(User).get(user_id)
+    return session.get(User, user_id)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -136,6 +137,12 @@ def add_job() -> str:
         job.team_leader = form.team_leader_id.data
         job.work_size = form.duration.data
         job.collaborators = form.collaborators.data
+        
+        category = session.get(Category, form.hazard_category_id.data)
+        
+        if category:
+            job.categories.append(category)
+        
         job.is_finished = form.is_finished.data
         session.add(job)
         session.commit()
@@ -149,12 +156,14 @@ def edit_job(id: int) -> str:
     param = {}
     form = JobsForm()
     
+    session = db_session.create_session()
+    form.hazard_category_id.choices = [[c.id, c.name] for c in session.query(Category).all()]
+    
     param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Edit a job"
     param["form"] = form
     
     if request.method == "GET":
-        session = db_session.create_session()
         jobs = session.query(Jobs).filter(Jobs.id == id,
                                           or_(Jobs.team_leader == int(current_user.get_id()), int(current_user.get_id()) == 1)
                                           ).first()
@@ -163,11 +172,11 @@ def edit_job(id: int) -> str:
             form.team_leader_id.data = jobs.team_leader
             form.duration.data = jobs.work_size
             form.collaborators.data = jobs.collaborators
+            form.hazard_category_id.data = [c.id for c in jobs.categories]
             form.is_finished.data = jobs.is_finished
         else:
             abort(404)
     if form.validate_on_submit():
-        session = db_session.create_session()
         jobs = session.query(Jobs).filter(Jobs.id == id,
                                           or_(Jobs.team_leader == int(current_user.get_id()), int(current_user.get_id()) == 1)
                                           ).first()
@@ -176,6 +185,7 @@ def edit_job(id: int) -> str:
             jobs.team_leader = form.team_leader_id.data
             jobs.work_size = form.duration.data
             jobs.collaborators = form.collaborators.data
+            jobs.categories = session.query(Category).filter(Category.id.in_(form.hazard_category_id.data)).all()
             jobs.is_finished = form.is_finished.data
             session.commit()
             return redirect("/")

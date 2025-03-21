@@ -25,6 +25,7 @@
                         <th scope="col" class="table-header">Team leader</th>
                         <th scope="col" class="table-header">Duration</th>
                         <th scope="col" class="table-header">List of collaborators</th>
+                        <th scope="col" class="table-header">Hazard category</th>
                         <th scope="col" class="table-header">Is finished</th>
                     </tr>
                 </thead>
@@ -32,8 +33,13 @@
                     <tr>
                         <td scope="row" class="table-item">{{ action.job }}</td>
                         <td scope="row" class="table-item">{{ action.leader.surname}} {{ action.leader.name }}</td>
-                        <td scope="row" class="table-item">{{ action.work_size }}</td>
+                        <td scope="row" class="table-item">{{ action.work_size }} hours</td>
                         <td scope="row" class="table-item">{{ action.collaborators }}</td>
+                        <td scope="row" class="table-item">
+                            {% for category in action.categories %}
+                                {{ category.id }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
                         {% if action.is_finished %}
                             <td scope="row" style="background-color: #eeffee;">Finished</td>
                         {% else %}

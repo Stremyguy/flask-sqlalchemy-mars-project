@@ -51,6 +51,11 @@
                 </p>
             {% endfor %}
         </p>
+        <p>
+            <div class="form-group">
+                {{ form.hazard_category_id.label }}
+                {{ form.hazard_category_id(class="form-control", multiple="multiple") }}
+        </p>
         <p>{{ form.is_finished() }} {{ form.is_finished.label }}</p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         {{ message }}
