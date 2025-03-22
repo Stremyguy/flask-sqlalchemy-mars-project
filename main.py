@@ -127,12 +127,14 @@ def add_job() -> str:
     param = {}
     form = JobsForm()
     
+    session = db_session.create_session()
+    form.hazard_category_id.choices = [[c.id, c.name] for c in session.query(Category).all()]
+    
     param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Add a job"
     param["form"] = form
     
     if form.validate_on_submit():
-        session = db_session.create_session()
         job = Jobs()
         job.job = form.title.data
         job.team_leader = form.team_leader_id.data
