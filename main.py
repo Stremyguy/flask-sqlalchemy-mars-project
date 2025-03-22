@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, abort
+from flask import Flask, render_template, url_for, redirect, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
 from data import db_session, jobs_api
@@ -299,6 +299,16 @@ def delete_department(id: int) -> None:
     else:
         abort(404)
     return redirect("/departments")
+
+
+@app.errorhandler(404)
+def not_found(error: None) -> dict:
+    return make_response(jsonify({"error": "Not found"}), 404)
+
+
+@app.errorhandler(400)
+def bad_request(_) -> dict:
+    return make_response(jsonify({"error": "Bad Request"}), 400)
 
 
 if __name__ == "__main__":
