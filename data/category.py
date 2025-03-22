@@ -1,6 +1,8 @@
 import sqlalchemy
 from .db_session import SqlAlchemyBase
 
+from sqlalchemy_serializer import SerializerMixin
+
 jobs_to_category = sqlalchemy.Table(
     "jobs_to_category",
     SqlAlchemyBase.metadata,
@@ -11,7 +13,7 @@ jobs_to_category = sqlalchemy.Table(
 )
 
 
-class Category(SqlAlchemyBase):
+class Category(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "category"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                            autoincrement=True)
