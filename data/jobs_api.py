@@ -81,3 +81,34 @@ def delete_job(job_id: int) -> dict:
     session.commit()
     
     return jsonify({"success": "OK"})
+
+
+@blueprint.route("/api/jobs/<int:job_id>", methods=["PUT"])
+def edit_job(job_id: int) -> dict:
+    if not request.json:
+        return make_response(jsonify({"error": "Empty request"}), 400)
+    
+    session = db_session.create_session()
+    job = session.query(Jobs).get(job_id)
+    
+    if not job:
+        return make_response(jsonify({"error": "Not found"}))
+    
+    data = request.json
+    
+    if "job" in data:
+        job.job = data["job"]
+    if "team_leader_id" in data:
+        job.team_leader = data["team_leader_id"]
+    if "work_size" in data:
+        job.work_size = data["work_size"]
+    if "collaborators" in data:
+        job.collaborators = data["collaborators"]
+    if "categories" in data:
+        job.categories = session.query(Category).filter(Category.id.in_(data["categories"])).all()
+    if "is_finished" in data:
+        job.is_finished = data["is_finished"]
+        
+    session.commit()
+    
+    return jsonify({"success": "OK"})
