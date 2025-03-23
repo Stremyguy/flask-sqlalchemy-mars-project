@@ -69,20 +69,6 @@ def create_job() -> dict:
     return jsonify({"id": job.id})
 
 
-@blueprint.route("/api/jobs/<int:job_id>", methods=["DELETE"])
-def delete_job(job_id: int) -> dict:
-    session = db_session.create_session()
-    job = session.query(Jobs).get(job_id)
-    
-    if not job:
-        return make_response(jsonify({"error": "Not found"}), 404)
-    
-    session.delete(job)
-    session.commit()
-    
-    return jsonify({"success": "OK"})
-
-
 @blueprint.route("/api/jobs/<int:job_id>", methods=["PUT"])
 def edit_job(job_id: int) -> dict:
     if not request.json:
@@ -109,6 +95,20 @@ def edit_job(job_id: int) -> dict:
     if "is_finished" in data:
         job.is_finished = data["is_finished"]
         
+    session.commit()
+    
+    return jsonify({"success": "OK"})
+
+
+@blueprint.route("/api/jobs/<int:job_id>", methods=["DELETE"])
+def delete_job(job_id: int) -> dict:
+    session = db_session.create_session()
+    job = session.query(Jobs).get(job_id)
+    
+    if not job:
+        return make_response(jsonify({"error": "Not found"}), 404)
+    
+    session.delete(job)
     session.commit()
     
     return jsonify({"success": "OK"})

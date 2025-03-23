@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
-from data import db_session, jobs_api
+from data import db_session, users_api, jobs_api
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Departments
@@ -21,9 +21,10 @@ app.config["SECRET_KEY"] = "yandexlyceum_secret_key"
 
 def main() -> None:
     db_session.global_init("db/mars_explorer.db")
+    app.register_blueprint(users_api.blueprint)
     app.register_blueprint(jobs_api.blueprint)
     app.run()
-    
+
 
 @app.route("/")
 def index() -> str:
