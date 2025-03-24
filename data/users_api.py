@@ -1,5 +1,6 @@
 import flask
-from flask import jsonify, make_response, request
+from flask import jsonify, make_response, request, render_template
+import requests
 
 from . import db_session
 from .users import User
@@ -18,8 +19,8 @@ def get_users() -> dict:
     return jsonify(
         {
             "users":
-                [item.to_dict(only=("surname", "name", "age", "position", "speciality",
-                                    "address"))
+                [item.to_dict(only=("surname", "name", "age", "city_from", 
+                                    "position", "speciality", "address"))
                  for item in users]
         }
     )
@@ -36,7 +37,7 @@ def get_one_user(user_id: int) -> dict:
     return jsonify(
         {
             "user": user.to_dict(only=(
-                "surname", "name", "age", 
+                "surname", "name", "age", "city_from",
                 "position", "speciality", "address"))
         }
     )
@@ -47,7 +48,7 @@ def create_user() -> dict:
     if not request.json:
         return make_response(jsonify({"error": "Empty request"}), 400)
     elif not all(key in request.json for key in
-                 ["surname", "name", "age", "position",
+                 ["surname", "name", "age", "city_from", "position",
                   "speciality", "address", "email", "password"]):
         return make_response(jsonify({"error": "Bad request"}), 400)
     
@@ -57,6 +58,7 @@ def create_user() -> dict:
         email=request.json["email"],
         surname=request.json["surname"],
         name=request.json["name"],
+        city_from=request.json["city_from"],
         age=request.json["age"],
         position=request.json["position"],
         speciality=request.json["speciality"],
@@ -89,6 +91,8 @@ def edit_user(user_id: int) -> dict:
         user.name = data["name"]
     if "age" in data:
         user.age = data["age"]
+    if "city_from" in data:
+        user.city_from = data["city_from"]
     if "position" in data:
         user.position = data["position"]
     if "speciality" in data:
@@ -117,3 +121,37 @@ def delete_user(user_id: int) -> dict:
     session.commit()
     
     return jsonify({"success": "OK"})
+
+
+@blueprint.route("/users_show/<int:user_id>", methods=["GET"])
+def nostalgy(user_id: str) -> str:
+    session = db_session.create_session()
+    user = session.query(User).get(user_id)
+    geocode = user.city_from
+    
+    param = {}
+    param["surname"] = user.surname
+    param["name"] = user.name
+    param["hometown"] = geocode
+    
+    geocoder_server_address = "https://geocode-maps.yandex.ru/1.x/?"
+    geocoder_api_key = "8013b162-6b42-4997-9691-77b7074026e0"
+    
+    geocoder_request = f"{geocoder_server_address}apikey={geocoder_api_key}&geocode={geocode}&format=json"
+    
+    response = requests.get(geocoder_request)
+    
+    if response:
+        json_response = response.json()
+        
+        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+        toponym_coordinates = toponym["Point"]["pos"]
+        
+        lat, lon = list(map(float, toponym_coordinates.split()))
+        
+        param["lat"], param["lon"] = lat, lon
+        param["hometown_map"] = True
+    else:
+        param["hometown_map"] = False
+        
+    return render_template("nostalgy.html", **param)

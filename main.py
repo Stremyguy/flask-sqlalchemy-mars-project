@@ -33,7 +33,6 @@ def index() -> str:
     actions = session.query(Jobs).all()
 
     param = {}
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["actions"] = actions
     
     return render_template("works_log.html", **param)
@@ -42,7 +41,6 @@ def index() -> str:
 @app.route("/success")
 def success() -> str:
     param = {}
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Success!"
     
     return render_template("success.html", **param)
@@ -53,7 +51,6 @@ def register() -> str:
     form = RegisterForm()
     
     param = {}
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Registration"
     
     if form.validate_on_submit():
@@ -74,6 +71,7 @@ def register() -> str:
             surname=form.surname.data,
             name=form.name.data,
             age=form.age.data,
+            city_from=form.city_from.data,
             position=form.position.data,
             speciality=form.speciality.data,
             address=form.address.data
@@ -98,7 +96,6 @@ def login() -> str:
     param = {}
     form = LoginForm()
     
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Registration"
     param["form"] = form
     
@@ -131,7 +128,6 @@ def add_job() -> str:
     session = db_session.create_session()
     form.hazard_category_id.choices = [[c.id, c.name] for c in session.query(Category).all()]
     
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Add a job"
     param["form"] = form
     
@@ -163,7 +159,6 @@ def edit_job(id: int) -> str:
     session = db_session.create_session()
     form.hazard_category_id.choices = [[c.id, c.name] for c in session.query(Category).all()]
     
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Edit a job"
     param["form"] = form
     
@@ -221,7 +216,6 @@ def departments() -> str:
 
     param = {}
     param["title"] = "List of Departments"
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["departments"] = departments
     
     return render_template("departments_list.html", **param)
@@ -233,7 +227,6 @@ def add_department() -> str:
     param = {}
     form = DepartmentsForm()
     
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Add a department"
     param["form"] = form
     
@@ -256,7 +249,6 @@ def edit_department(id: int) -> str:
     param = {}
     form = DepartmentsForm()
     
-    param["css_link"] = url_for("static", filename="css/style.css")
     param["title"] = "Edit a department"
     param["form"] = form
     

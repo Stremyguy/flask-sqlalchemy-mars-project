@@ -15,6 +15,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     surname = sqlalchemy.Column(sqlalchemy.String)
     name = sqlalchemy.Column(sqlalchemy.String)
     age = sqlalchemy.Column(sqlalchemy.Integer)
+    city_from = sqlalchemy.Column(sqlalchemy.String)
     position = sqlalchemy.Column(sqlalchemy.String)
     speciality = sqlalchemy.Column(sqlalchemy.String)
     address = sqlalchemy.Column(sqlalchemy.String)
@@ -33,4 +34,3 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     
     def __repr__(self) -> str:
         return f"<Colonist> {self.id} {self.surname} {self.name}"
-

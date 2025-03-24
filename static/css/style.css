@@ -18,3 +18,9 @@ h4 {
     text-overflow: ellipsis;
     background-color: #eeeeff;
 }
+
+.centered-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
