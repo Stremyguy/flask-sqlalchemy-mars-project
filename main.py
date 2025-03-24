@@ -1,7 +1,8 @@
 from flask import Flask, render_template, url_for, redirect, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_login import current_user
-from data import db_session, users_api, jobs_api
+from flask_restful import abort, Api
+from data import db_session, users_api, jobs_api, users_resource
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Departments
@@ -12,6 +13,10 @@ from forms.departments import DepartmentsForm
 from sqlalchemy import or_
 
 app = Flask(__name__)
+api = Api(app)
+
+api.add_resource(users_resource.UsersListResource, "/api/v2/users")
+api.add_resource(users_resource.UsersResource, "/api/v2/users/<int:user_id>")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
