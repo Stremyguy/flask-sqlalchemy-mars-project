@@ -15,6 +15,5 @@ jobs_to_category = sqlalchemy.Table(
 
 class Category(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "category"
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
-                           autoincrement=True)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)

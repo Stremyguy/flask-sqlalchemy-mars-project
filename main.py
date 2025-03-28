@@ -11,6 +11,7 @@ from forms.user import RegisterForm, LoginForm
 from forms.jobs import JobsForm
 from forms.departments import DepartmentsForm
 from sqlalchemy import or_
+from seed.seed import run_seeds
 
 app = Flask(__name__)
 api = Api(app)
@@ -30,7 +31,8 @@ app.config["SECRET_KEY"] = "yandexlyceum_secret_key"
 
 
 def main() -> None:
-    db_session.global_init("db/mars_explorer.db")
+    db_session.global_init()
+    run_seeds()
     app.register_blueprint(users_api.blueprint)
     app.register_blueprint(jobs_api.blueprint)
     app.run()
